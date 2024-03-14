@@ -33,19 +33,19 @@ void SnakeGame::processEvents() {
             window.close();
         if (event.type == sf::Event::KeyPressed) {
             switch (event.key.code) {
-                case sf::Keyboard::Up:
+                case (sf::Keyboard::W):
                     if (direction != Direction::Down)
                         direction = Direction::Up;
                     break;
-                case sf::Keyboard::Down:
+                case sf::Keyboard::S:
                     if (direction != Direction::Up)
                         direction = Direction::Down;
                     break;
-                case sf::Keyboard::Left:
+                case sf::Keyboard::A:
                     if (direction != Direction::Right)
                         direction = Direction::Left;
                     break;
-                case sf::Keyboard::Right:
+                case sf::Keyboard::D:
                     if (direction != Direction::Left)
                         direction = Direction::Right;
                     break;
@@ -70,10 +70,17 @@ void SnakeGame::render() {
     window.clear();
 
     // Draw Snake
+    bool isFirstSegment = true;
     for (const auto& segment : snake) {
         sf::RectangleShape shape(sf::Vector2f(CELL_SIZE, CELL_SIZE));
         shape.setPosition(segment.x * CELL_SIZE, segment.y * CELL_SIZE);
-        shape.setFillColor(sf::Color::Green);
+
+        if (isFirstSegment) {
+            shape.setFillColor(sf::Color::White);
+            isFirstSegment = false;
+        } else {
+            shape.setFillColor(sf::Color::Green);
+        }
         window.draw(shape);
     }
 
@@ -120,10 +127,15 @@ void SnakeGame::checkCollision() {
         }
     }
     // Check if snake collides with walls
-    if (snake.front().x < 0 || snake.front().x >= GRID_WIDTH ||
-        snake.front().y < 0 || snake.front().y >= GRID_HEIGHT) {
-        window.close();
-    }
+
+    if (snake.front().x < 0)
+        snake.front().x = GRID_WIDTH - 1;
+    else if (snake.front().x >= GRID_WIDTH)
+        snake.front().x = 0;
+    if (snake.front().y < 0)
+        snake.front().y = GRID_HEIGHT - 1;
+    else if (snake.front().y >= GRID_HEIGHT)
+        snake.front().y = 0;
 }
 
 void SnakeGame::spawnFruit() {
